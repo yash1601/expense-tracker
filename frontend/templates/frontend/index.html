@@ -1,0 +1,284 @@
+{% load static %}
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hello</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link href='https://fonts.googleapis.com/css?family=Alef' rel='stylesheet'>
+    <!--suppress CssNoGenericFontName -->
+    <style>
+    body {
+        font-family: 'Alef';font-size: 15px;
+    }
+    #list-item{
+        transition: 0.7s;
+    }
+    #list-item:hover{
+        background-color: lavender;
+    }
+    #submit{
+        background-color: cornflowerblue;
+        opacity: 100%;
+        transition: 0.7s;
+    }
+    #submit:hover{
+        opacity: 85%;
+    }
+    #bg {
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: top;
+        background-attachment: fixed;
+        opacity: 100%;
+    }
+    .btn {
+      background-color: cornflowerblue;
+      border: none;
+      color: white;
+      padding: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* Darker background on mouse-over */
+    .btn:hover {
+      opacity: 70%;
+    }
+    .sticky{
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        z-index: +1;
+    }
+
+    #form-col {
+        background-image: linear-gradient(to left bottom, white, lightsteelblue);
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+    .sidebar {
+          height: 40%;
+          width: 0;
+          position: absolute;
+          z-index: 1;
+          top: 0;
+          right: 0;
+          background-color: white;
+          overflow-x: hidden;
+          transition: 0.5s;
+          padding-top: 60px;
+        }
+
+        .sidebar a {
+          padding: 8px 8px 8px 32px;
+          text-decoration: none;
+          font-size: 25px;
+          color: #818181;
+          display: block;
+          transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+          color: #f1f1f1;
+        }
+
+
+
+        .openbtn {
+          font-size: 15px;
+          cursor: pointer;
+          background-color: cornflowerblue;
+          color: white;
+          padding: 10px;
+          border: none;
+          float: right;
+          position: relative;
+          top: 90px;
+
+        }
+
+
+
+
+    </style>
+    <script src="https://use.fontawesome.com/a65d534a59.js"></script>
+</head>
+<body id="bg" style="background-image:url('{% static "frontend/background3.jpg" %}');">
+
+  <div id="main">
+
+    <a id="logout-btn" style="color: cornflowerblue; padding: 10px; font-size: 20px;" title="log out" href="{% url 'logout' %}">logout</a>
+    <div class="row" id="stick" style="padding-left: 450px; padding-top: 20px; padding-bottom: 15px;" >
+
+      <div id="mySidebar" class="sidebar" style=" padding-bottom: 30px;">
+          <button class="btn closebtn" onclick="closeNav()" style="float: right; position: absolute; top: 0; left: 2px;"><i class="fa fa-times" aria-hidden="true"></i></button>
+          <a href="#">About</a>
+      </div>
+
+      <button id="stick-bt" class="btn openbtn" style="transition: 0.7s" title="check balance" onclick="openNav()"><p style="writing-mode: vertical-rl">Budget</p></button>
+    <div class="col-md-6" id="form-col">
+    <form style="padding-top: 20px; padding-bottom: 20px;" id="form">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label>Title</label>
+          <input id="form-title" style="background-color: white" type="text" class="form-control" placeholder="Title" required>
+        </div>
+        <div class="form-group col-md-6">
+          <label>Amount in INR</label>
+          <input id="form-amount" style="background-color: white" type="number" class="form-control" placeholder="Amount" required>
+        </div>
+          <br>
+
+      </div>
+    <div class="form-row">
+        <div class="form-group col-md-12">
+          <label>Add Detail(optional)</label>
+          <input id="form-detail" style="background-color: white" type="text" class="form-control">
+        </div>
+    </div>
+    <div class="row" style="padding-left: 200px"><input id="submit" class="btn" type="submit" title="submit"></div>
+    </form>
+    </div>
+
+    </div>
+
+<br>
+
+    <div class="row">
+        <div class="col-md-8 list-group" style="padding-left: 462px;" id="list-wrapper">
+
+        </div>
+    </div>
+</div>
+    <script>
+
+        function openNav() {
+          document.getElementById("mySidebar").style.width = "250px";
+
+
+        }
+
+        function closeNav() {
+          document.getElementById("mySidebar").style.width = "0";
+
+        }
+
+        window.onscroll = function() {myFunction()};
+
+        var stick = document.getElementById("stick");
+        var sticky = stick.offsetTop;
+
+        function myFunction() {
+          if (window.pageYOffset >= sticky) {
+            stick.classList.add("sticky")
+          } else {
+            stick.classList.remove("sticky");
+          }
+
+        }
+
+        function getCookie(name) {
+		    var cookieValue = null;
+		    if (document.cookie && document.cookie !== '') {
+		        var cookies = document.cookie.split(';');
+		        for (var i = 0; i < cookies.length; i++) {
+		            var cookie = cookies[i].trim();
+		            // Does this cookie string begin with the name we want?
+		            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+		                break;
+		            }
+		        }
+		    }
+		    return cookieValue;
+		}
+		var csrftoken = getCookie('csrftoken');
+
+        List()
+
+        function List(){
+            var wrapper = document.getElementById('list-wrapper')
+            wrapper.innerHTML = ''
+            var url = 'http://127.0.0.1:8000/api/list/'
+            fetch(url)
+            .then((resp)=>resp.json())
+            .then(function(data){
+                console.log('Data:', data)
+                list = data;
+                var total = 0
+                for(var i in list){
+                    total += list[i].amount
+                    var item = `
+                        <div class="list-group-item list-group-item-action flex-column align-items-start" id="list-item">
+                            <div class="row" style="padding-left: 20px">
+                              <p class="mb-1" style="font-size: large; text-align: left">${list[i].title} <button class="delete-item btn" title="delete" style="float: right; transition: 0.7s; padding: 10px;"><i class="fa fa-trash" aria-hidden="true"></i></button><b style="float: right; padding-right: 20px">${list[i].amount}</b></p>
+                                </div>
+
+                               <hr>
+                            <small id="list-detail">${list[i].detail} </small>
+
+                        </div>
+                    `
+                    wrapper.innerHTML += item
+
+                }
+                console.log(total)
+                for(var i in list){
+                    var deleteBtn = document.getElementsByClassName('delete-item')[i]
+
+                    deleteBtn.addEventListener('click', (function(item){
+                                return function(){
+                                    deleteItem(item)
+                                }
+                            })(list[i]))
+                }
+            })
+
+        }
+
+        var form = document.getElementById('form')
+		form.addEventListener('submit', function(e){
+			e.preventDefault()
+			console.log('Form submitted')
+			var url = 'http://127.0.0.1:8000/api/create/'
+
+			var title = document.getElementById('form-title').value
+            var detail = document.getElementById('form-detail').value
+            var amount = document.getElementById('form-amount').value
+			fetch(url, {
+				method:'PUT',
+				headers:{
+					'Content-type':'application/json',
+					'X-CSRFToken':csrftoken,
+				},
+				body:JSON.stringify({'title':title, 'amount':amount, 'detail':detail})
+			}
+			).then(function(response){
+				List()
+				document.getElementById('form').reset()
+			})
+		})
+
+        function deleteItem(item){
+			console.log('Delete clicked')
+			fetch(`http://127.0.0.1:8000/api/expense-delete/${item.id}`, {
+				method:'DELETE',
+				headers:{
+					'Content-type':'application/json',
+					'X-CSRFToken':csrftoken,
+				}
+			}).then((response) => {
+				List()
+			})
+		}
+
+    </script>
+</body>
+</html>
