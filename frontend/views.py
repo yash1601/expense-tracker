@@ -9,7 +9,18 @@ from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='login')
 def index(request):
-    return render(request, 'frontend/index.html')
+    budget = request.user.profile.budget
+    context = {
+        'budget': budget,
+    }
+    if request.method == 'POST':
+        b = request.POST.get('budget')
+        user = request.user
+        profile = user.profile
+        profile.budget = b
+        profile.save()
+        return redirect('index')
+    return render(request, 'frontend/index.html', context)
 
 
 def register(request):

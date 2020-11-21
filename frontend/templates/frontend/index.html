@@ -64,7 +64,7 @@
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
     .sidebar {
-          height: 40%;
+          height: 50%;
           width: 0;
           position: absolute;
           z-index: 1;
@@ -103,15 +103,63 @@
           top: 90px;
 
         }
+        .sidebar-item{
+            padding-left: 5px;
+        }
 
+        .modal {
+          display: none; /* Hidden by default */
+          position: fixed; /* Stay in place */
+          z-index: 1; /* Sit on top */
+          padding-top: 100px; /* Location of the box */
+          left: 0;
+          top: 0;
+          width: 100%; /* Full width */
+          height: 100%; /* Full height */
+          overflow: auto; /* Enable scroll if needed */
+          background-color: rgb(0,0,0); /* Fallback color */
+          background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
 
+        /* Modal Content */
+        .modal-content {
+          background-color: #fefefe;
+          margin: auto;
+          padding: 20px;
+          border: 1px solid #888;
+          width: 80%;
+        }
 
+        /* The Close Button */
+        .close {
+          color: #aaaaaa;
+          float: right;
+          font-size: 28px;
+          font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+          color: #000;
+          text-decoration: none;
+          cursor: pointer;
+        }
 
     </style>
     <script src="https://use.fontawesome.com/a65d534a59.js"></script>
 </head>
 <body id="bg" style="background-image:url('{% static "frontend/background3.jpg" %}');">
+<div id="myModal" class="modal">
 
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3>Hello! I am your personal Expense-Tracker app</h3>
+    <p>You can add and delete your expenses</p>
+    <p>  keep track on them by adding a fixed budget by clicking on the "budget" section</p>
+  </div>
+
+</div>
   <div id="main">
 
     <a id="logout-btn" style="color: cornflowerblue; padding: 10px; font-size: 20px;" title="log out" href="{% url 'logout' %}">logout</a>
@@ -119,12 +167,26 @@
 
       <div id="mySidebar" class="sidebar" style=" padding-bottom: 30px;">
           <button class="btn closebtn" onclick="closeNav()" style="float: right; position: absolute; top: 0; left: 2px;"><i class="fa fa-times" aria-hidden="true"></i></button>
-          <a href="#">About</a>
+          <form method="POST" action="" >
+              {% csrf_token %}
+              <div class="form-row">
+                <div class="form-group col-md-12">
+                  <label>Add or Change Budget</label>
+                  <input id="form-budget" name="budget" style="background-color: white" type="text" class="form-control">
+                    <input style="transition: 0.7s" type="submit" class="btn" title="submit" name="submit">
+                </div>
+            </div>
+          </form>
+          <h5 class="sidebar-item">Budget added: <b id="budget">{{ budget }}</b></h5>
+          <h5 class="sidebar-item">spending this month: <b id="spending"></b></h5>
+          <h5 class="sidebar-item">balance: <b id="balance"></b></h5>
+
       </div>
 
       <button id="stick-bt" class="btn openbtn" style="transition: 0.7s" title="check balance" onclick="openNav()"><p style="writing-mode: vertical-rl">Budget</p></button>
     <div class="col-md-6" id="form-col">
     <form style="padding-top: 20px; padding-bottom: 20px;" id="form">
+      {% csrf_token %}
       <div class="form-row">
         <div class="form-group col-md-6">
           <label>Title</label>
@@ -158,6 +220,27 @@
     </div>
 </div>
     <script>
+        var modal = document.getElementById("myModal");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks the button, open the modal
+        window.onload = function() {
+          modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+          modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        }
 
         function openNav() {
           document.getElementById("mySidebar").style.width = "250px";
@@ -201,8 +284,9 @@
 		}
 		var csrftoken = getCookie('csrftoken');
 
-        List()
 
+
+        List()
         function List(){
             var wrapper = document.getElementById('list-wrapper')
             wrapper.innerHTML = ''
@@ -230,6 +314,7 @@
 
                 }
                 console.log(total)
+                document.getElementById('spending').innerHTML = total
                 for(var i in list){
                     var deleteBtn = document.getElementsByClassName('delete-item')[i]
 
@@ -243,6 +328,36 @@
 
         }
 
+        Budget()
+        function Budget(){
+            var budget = document.getElementById('budget').innerHTML
+            var t, x
+            var url = 'http://127.0.0.1:8000/api/list/'
+            fetch(url)
+            .then((resp)=>resp.json())
+            .then(function(data){
+                console.log('Data:', data)
+                list = data;
+                t = 0
+                for(var i in list){
+                    t+=list[i].amount
+                }
+                console.log(t)
+                console.log(budget)
+                if(budget > t && budget > 0){
+                    document.getElementById('balance').innerHTML="In the clear, can spend more"
+                    document.getElementById('balance').style.color = "green"
+                }
+                else if(t > budget && budget > 0){
+                    document.getElementById('balance').innerHTML="Spent more than budget"
+                    document.getElementById('balance').style.color = "red"
+                }
+            })
+            console.log(budget)
+
+
+
+        }
         var form = document.getElementById('form')
 		form.addEventListener('submit', function(e){
 			e.preventDefault()
